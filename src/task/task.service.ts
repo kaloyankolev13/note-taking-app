@@ -62,10 +62,8 @@ export class TaskService {
   }
 
   async remove(taskId: string): Promise<void> {
-    console.log(taskId);
     // First, find the task to get the projectId
     const task = await this.taskModel.findById(taskId);
-    console.log(task);
     if (!task) {
       throw new Error(`Task with ID ${taskId} not found`);
     }
