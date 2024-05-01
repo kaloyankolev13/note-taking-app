@@ -1,3 +1,4 @@
+// src/projects/projects.module.ts
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectService } from './project.service';
@@ -10,5 +11,8 @@ import { Project, ProjectSchema } from '../schemas/project.schema';
   ],
   controllers: [ProjectController],
   providers: [ProjectService],
+  exports: [
+    MongooseModule.forFeature([{ name: Project.name, schema: ProjectSchema }]),
+  ], // Export the ProjectModel
 })
 export class ProjectModule {}

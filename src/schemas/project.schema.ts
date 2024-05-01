@@ -1,8 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
-import { Task } from './task.schema'; // assuming you have a Note schema defined
-
-export type ProjectDocument = Document & Project;
+import mongoose from 'mongoose';
+import { Task } from './task.schema';
 
 @Schema()
 export class Project {
@@ -10,10 +8,11 @@ export class Project {
   title: string;
 
   @Prop({
-    required: true,
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Note' }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
+    default: [],
   })
-  notes: Task[];
+  tasks: mongoose.Types.ObjectId[];
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);
+export type ProjectDocument = Project & Document;
