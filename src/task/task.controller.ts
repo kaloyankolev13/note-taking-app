@@ -23,8 +23,9 @@ export class TaskController {
     return this.taskService.create(createTaskDto, projectId);
   }
 
-  @Get()
+  @Get(':projectId')
   findAll(@Param('projectId') projectId: string) {
+    console.log(projectId);
     return this.taskService.findAll(projectId);
   }
 
