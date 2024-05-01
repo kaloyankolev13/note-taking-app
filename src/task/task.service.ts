@@ -3,8 +3,8 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Task, TaskDocument } from 'src/schemas/task.schema';
-import { Project, ProjectDocument } from 'src/schemas/project.schema';
+import { Task, TaskDocument } from '../schemas/task.schema';
+import { Project, ProjectDocument } from '../schemas/project.schema';
 
 @Injectable()
 export class TaskService {
@@ -49,8 +49,12 @@ export class TaskService {
     return this.taskModel.find({ project: projectId }).exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne(id: string): Promise<Task> {
+    const task = await this.taskModel.findById(id).exec();
+    if (!task) {
+      throw new Error(`Task with ID ${id} not found`);
+    }
+    return task;
   }
 
   update(id: number, updateTaskDto: UpdateTaskDto) {
