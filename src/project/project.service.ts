@@ -4,11 +4,13 @@ import { Model } from 'mongoose';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project, ProjectDocument } from '../schemas/project.schema';
+import { TaskService } from '../task/task.service';
 
 @Injectable()
 export class ProjectService {
   constructor(
     @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
+    private taskService: TaskService,
   ) {}
 
   async create(createProjectDto: CreateProjectDto): Promise<Project> {
@@ -34,6 +36,7 @@ export class ProjectService {
   }
 
   async remove(id: string): Promise<Project> {
+    await this.taskService.deleteAllInProject(id);
     return this.projectModel.findByIdAndDelete(id).exec();
   }
 }

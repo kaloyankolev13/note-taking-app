@@ -20,7 +20,7 @@ export class TaskService {
     if (!project) {
       throw new Error(`Project with ID ${projectId} not found`);
     }
-
+    console.log('hello');
     // Now create the task
     const newTask = new this.taskModel({
       ...createTaskDto,
@@ -39,13 +39,12 @@ export class TaskService {
   }
 
   async findAll(projectId: string): Promise<Task[]> {
-    // Check if the project exists
+    console.log();
     const project = await this.projectModel.findById(projectId);
     if (!project) {
       throw new Error(`Project with ID ${projectId} not found`);
     }
 
-    // Return all tasks for the given project ID
     return this.taskModel.find({ project: projectId }).exec();
   }
 
@@ -62,22 +61,22 @@ export class TaskService {
   }
 
   async remove(taskId: string): Promise<void> {
-    console.log(taskId);
-    // First, find the task to get the projectId
     const task = await this.taskModel.findById(taskId);
-    console.log(task);
     if (!task) {
       throw new Error(`Task with ID ${taskId} not found`);
     }
 
-    // Remove the task
     await this.taskModel.findByIdAndDelete(taskId);
 
-    // Update the project to remove the task ID from the tasks array
     await this.projectModel.findByIdAndUpdate(
       task.project,
       { $pull: { tasks: task._id } }, // Use $pull to remove the taskId from the array
       { new: true },
     );
+  }
+  async deleteAllInProject(projectId: string): Promise<void> {
+    await this.taskModel.deleteMany({
+      project: projectId,
+    });
   }
 }
