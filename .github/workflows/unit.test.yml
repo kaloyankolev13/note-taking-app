@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 16.x]
+        node-version: [18.x, 16.x, 14.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -40,16 +40,16 @@ jobs:
         id: current_version
         run: echo "::set-output name=VERSION::$(node -p "require('./package.json').version")"
 
-      - name: Get version from main branch
-        id: main_version
+      - name: Get version from master branch
+        id: master_version
         run: |
-          git fetch origin main
-          echo "::set-output name=VERSION::$(node -p "require('./package.json').version" -- package.json)"
+          git fetch origin master:refs/remotes/origin/master
+          echo "::set-output name=VERSION::$(node -p "require('./package.json').version" --package.json)"
           working-directory: ${{ github.workspace }}
 
       - name: Compare versions
         run: |
-          if [ "${{ steps.current_version.outputs.VERSION }}" == "${{ steps.main_version.outputs.VERSION }}" ]; then
+          if [ "${{ steps.current_version.outputs.VERSION }}" == "${{ steps.master_version.outputs.VERSION }}" ]; then
             echo "Version number must be incremented."
             exit 1
           else
