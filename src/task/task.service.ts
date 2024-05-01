@@ -20,7 +20,7 @@ export class TaskService {
     if (!project) {
       throw new Error(`Project with ID ${projectId} not found`);
     }
-
+    console.log('hello');
     // Now create the task
     const newTask = new this.taskModel({
       ...createTaskDto,
