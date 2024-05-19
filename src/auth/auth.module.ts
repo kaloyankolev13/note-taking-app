@@ -4,8 +4,6 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '../users/users.module'; // Assumed to exist for user management
-import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../schemas/user.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
@@ -20,12 +18,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
-    MongooseModule.forFeature([
-      {
-        name: User.name,
-        schema: UserSchema,
-      },
-    ]),
   ],
   providers: [AuthService, JwtStrategy],
   exports: [AuthService],

@@ -23,6 +23,7 @@ export class UsersService {
   }
 
   createUser(data: CreateUserDTO) {
-    console.log(data);
+    const newUser = new this.userModel(data);
+    return newUser.save();
   }
 }
