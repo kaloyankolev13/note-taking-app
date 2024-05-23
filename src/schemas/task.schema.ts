@@ -14,6 +14,12 @@ export class Task {
 
   @Prop([String])
   tags: string[]; // An array of tags for categorization and searching
+
+  @Prop({
+    required: true,
+    enum: ['Backlog', 'In Progress', 'Complete', 'Archived'],
+  })
+  status: string; // The status of the note
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);

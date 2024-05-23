@@ -12,4 +12,7 @@ export class CreateProjectDto {
   @IsArray()
   @IsOptional()
   tags?: string[];
+
+  @IsArray()
+  tasks: string[];
 }

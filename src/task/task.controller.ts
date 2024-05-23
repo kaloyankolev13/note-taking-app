@@ -11,7 +11,7 @@ import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
-@Controller('task')
+@Controller('tasks')
 export class TaskController {
   constructor(private taskService: TaskService) {}
 
@@ -25,7 +25,6 @@ export class TaskController {
 
   @Get(':projectId')
   findAll(@Param('projectId') projectId: string) {
-    console.log(projectId);
     return this.taskService.findAll(projectId);
   }
 

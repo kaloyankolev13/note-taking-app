@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsArray,
   IsMongoId,
+  IsEnum,
 } from 'class-validator';
 import mongoose from 'mongoose';
 
@@ -25,4 +26,7 @@ export class CreateTaskDto {
   @IsArray()
   @IsString({ each: true })
   tags?: string[];
+
+  @IsEnum(['Backlog', 'In Progress', 'Done'])
+  status: string;
 }

@@ -20,7 +20,6 @@ export class TaskService {
     if (!project) {
       throw new Error(`Project with ID ${projectId} not found`);
     }
-    console.log('hello');
     // Now create the task
     const newTask = new this.taskModel({
       ...createTaskDto,
@@ -39,7 +38,6 @@ export class TaskService {
   }
 
   async findAll(projectId: string): Promise<Task[]> {
-    console.log();
     const project = await this.projectModel.findById(projectId);
     if (!project) {
       throw new Error(`Project with ID ${projectId} not found`);
