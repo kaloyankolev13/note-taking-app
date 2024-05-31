@@ -27,6 +27,6 @@ export class CreateTaskDto {
   @IsString({ each: true })
   tags?: string[];
 
-  @IsEnum(['Backlog', 'In Progress', 'Done'])
+  @IsEnum(['Backlog', 'In Progress', 'Completed', 'Archived'])
   status: string;
 }

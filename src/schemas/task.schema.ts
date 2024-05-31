@@ -17,7 +17,7 @@ export class Task {
 
   @Prop({
     required: true,
-    enum: ['Backlog', 'In Progress', 'Complete', 'Archived'],
+    enum: ['Backlog', 'In Progress', 'Completed', 'Archived'],
   })
   status: string; // The status of the note
 }
