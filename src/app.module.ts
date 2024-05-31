@@ -18,6 +18,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         Logger.log(`Connecting to MongoDB at ${uri}`);
         return {
           uri,
+          connectTimeoutMS: 30000, // Increase timeout to 30 seconds
         };
       },
       inject: [ConfigService],
