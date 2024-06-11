@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { User } from './user.schema';
 
 @Schema()
 export class Task {
@@ -20,6 +21,9 @@ export class Task {
     enum: ['Backlog', 'In Progress', 'Completed', 'Archived'],
   })
   status: string; // The status of the note
+
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  user: User;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);

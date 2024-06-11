@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -19,25 +19,50 @@ export class ProjectService {
     return newProject.save();
   }
 
-  async findAll(): Promise<Project[]> {
-    return this.projectModel.find().exec();
+  async findAll(userId: string): Promise<Project[]> {
+    return this.projectModel.find({ user: userId }).exec();
   }
 
-  async findOne(id: string): Promise<Project> {
-    return this.projectModel.findById(id).exec();
+  async findOne(id: string, userId: string): Promise<Project> {
+    const project = await this.projectModel
+      .findOne({ _id: id, user: userId })
+      .exec();
+    if (!project) {
+      throw new UnauthorizedException(
+        'You do not have access to this project.',
+      );
+    }
+    return project;
   }
 
   async update(
     id: string,
     updateProjectDto: UpdateProjectDto,
+    userId: string,
   ): Promise<Project> {
-    return this.projectModel
-      .findByIdAndUpdate(id, updateProjectDto, { new: true })
+    const project = await this.projectModel
+      .findOneAndUpdate({ _id: id, user: userId }, updateProjectDto, {
+        new: true,
+      })
       .exec();
+    if (!project) {
+      throw new UnauthorizedException(
+        'You do not have access to update this project.',
+      );
+    }
+    return project;
   }
 
-  async remove(id: string): Promise<Project> {
-    await this.taskService.deleteAllInProject(id);
-    return this.projectModel.findByIdAndDelete(id).exec();
+  async remove(id: string, userId: string): Promise<Project> {
+    const project = await this.projectModel
+      .findOneAndDelete({ _id: id, user: userId })
+      .exec();
+    if (!project) {
+      throw new UnauthorizedException(
+        'You do not have access to delete this project.',
+      );
+    }
+    await this.taskService.deleteAllInProject(id, userId);
+    return project;
   }
 }

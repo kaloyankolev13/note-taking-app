@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,20 +10,30 @@ import { Project, ProjectDocument } from '../schemas/project.schema';
 export class TaskService {
   constructor(
     @InjectModel(Task.name) private taskModel: Model<TaskDocument>,
-    @InjectModel(Project.name)
-    private projectModel: Model<ProjectDocument>,
+    @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
   ) {}
 
-  async create(createTaskDto: CreateTaskDto, projectId: string): Promise<Task> {
-    // First, check if the project exists
-    const project = await this.projectModel.findById(projectId);
+  async create(
+    createTaskDto: CreateTaskDto,
+    projectId: string,
+    userId: string,
+  ): Promise<Task> {
+    // First, check if the project exists and belongs to the user
+    const project = await this.projectModel.findOne({
+      _id: projectId,
+      user: userId,
+    });
     if (!project) {
-      throw new Error(`Project with ID ${projectId} not found`);
+      throw new UnauthorizedException(
+        `Project with ID ${projectId} not found or you do not have access`,
+      );
     }
+
     // Now create the task
     const newTask = new this.taskModel({
       ...createTaskDto,
       project: new Types.ObjectId(projectId), // Ensure projectId is converted to ObjectId
+      user: userId,
     });
     const task = await newTask.save();
 
@@ -37,31 +47,52 @@ export class TaskService {
     return task;
   }
 
-  async findAll(projectId: string): Promise<Task[]> {
-    const project = await this.projectModel.findById(projectId);
+  async findAll(projectId: string, userId: string): Promise<Task[]> {
+    const project = await this.projectModel.findOne({
+      _id: projectId,
+      user: userId,
+    });
     if (!project) {
-      throw new Error(`Project with ID ${projectId} not found`);
+      throw new UnauthorizedException(
+        `Project with ID ${projectId} not found or you do not have access`,
+      );
     }
 
-    return this.taskModel.find({ project: projectId }).exec();
+    return this.taskModel.find({ project: projectId, user: userId }).exec();
   }
 
-  async findOne(id: string): Promise<Task> {
-    const task = await this.taskModel.findById(id).exec();
+  async findOne(id: string, userId: string): Promise<Task> {
+    const task = await this.taskModel.findOne({ _id: id, user: userId }).exec();
     if (!task) {
-      throw new Error(`Task with ID ${id} not found`);
+      throw new UnauthorizedException(
+        `Task with ID ${id} not found or you do not have access`,
+      );
     }
     return task;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async update(
+    id: string,
+    updateTaskDto: UpdateTaskDto,
+    userId: string,
+  ): Promise<Task> {
+    const task = await this.taskModel
+      .findOneAndUpdate({ _id: id, user: userId }, updateTaskDto, { new: true })
+      .exec();
+    if (!task) {
+      throw new UnauthorizedException(
+        `Task with ID ${id} not found or you do not have access to update`,
+      );
+    }
+    return task;
   }
 
-  async remove(taskId: string): Promise<void> {
-    const task = await this.taskModel.findById(taskId);
+  async remove(taskId: string, userId: string): Promise<void> {
+    const task = await this.taskModel.findOne({ _id: taskId, user: userId });
     if (!task) {
-      throw new Error(`Task with ID ${taskId} not found`);
+      throw new UnauthorizedException(
+        `Task with ID ${taskId} not found or you do not have access to delete`,
+      );
     }
 
     await this.taskModel.findByIdAndDelete(taskId);
@@ -72,9 +103,20 @@ export class TaskService {
       { new: true },
     );
   }
-  async deleteAllInProject(projectId: string): Promise<void> {
-    await this.taskModel.deleteMany({
-      project: projectId,
+
+  async deleteAllInProject(projectId: string, userId: string): Promise<void> {
+    const project = await this.projectModel.findOne({
+      _id: projectId,
+      user: userId,
     });
+    if (!project) {
+      throw new UnauthorizedException(
+        `Project with ID ${projectId} not found or you do not have access`,
+      );
+    }
+
+    await this.taskModel
+      .deleteMany({ project: projectId, user: userId })
+      .exec();
   }
 }

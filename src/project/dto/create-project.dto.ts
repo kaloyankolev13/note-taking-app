@@ -15,4 +15,8 @@ export class CreateProjectDto {
 
   @IsArray()
   tasks: string[];
+
+  @IsString()
+  @IsNotEmpty()
+  user: string;
 }

@@ -6,6 +6,7 @@ import { ProjectController } from './project.controller';
 import { Project, ProjectSchema } from '../schemas/project.schema';
 import { TaskService } from '../task/task.service';
 import { TaskModule } from 'src/task/task.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { TaskModule } from 'src/task/task.module';
     MongooseModule.forFeature([{ name: Project.name, schema: ProjectSchema }]),
   ],
   controllers: [ProjectController],
-  providers: [ProjectService, TaskService],
+  providers: [ProjectService, TaskService, JwtService],
   exports: [
     MongooseModule.forFeature([{ name: Project.name, schema: ProjectSchema }]),
   ],
