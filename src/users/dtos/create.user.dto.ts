@@ -5,9 +5,9 @@ export class CreateUserDTO {
   @IsString()
   username: string;
 
-  @IsNotEmpty()
-  @IsEnum(['user', 'customer', 'admin'])
-  field: string; // use const types instead of strings?
+  // @IsNotEmpty()
+  // @IsEnum(['user', 'customer', 'admin'])
+  // field: string; // use const types instead of strings?
 
   @IsNotEmpty()
   @IsString()

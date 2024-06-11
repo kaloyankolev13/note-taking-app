@@ -6,7 +6,8 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: ['https://note-taking-front-dcce5e58f3d9.herokuapp.com'],
+    // origin: ['https://note-taking-front-dcce5e58f3d9.herokuapp.com'],
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
