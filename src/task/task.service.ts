@@ -18,7 +18,6 @@ export class TaskService {
     projectId: string,
     userId: string,
   ): Promise<Task> {
-    // First, check if the project exists and belongs to the user
     const project = await this.projectModel.findOne({
       _id: projectId,
       user: userId,
@@ -29,15 +28,13 @@ export class TaskService {
       );
     }
 
-    // Now create the task
     const newTask = new this.taskModel({
       ...createTaskDto,
-      project: new Types.ObjectId(projectId), // Ensure projectId is converted to ObjectId
+      project: new Types.ObjectId(projectId),
       user: userId,
     });
     const task = await newTask.save();
 
-    // Add task to the project
     await this.projectModel.findByIdAndUpdate(
       projectId,
       { $push: { tasks: task._id } },
@@ -99,7 +96,7 @@ export class TaskService {
 
     await this.projectModel.findByIdAndUpdate(
       task.project,
-      { $pull: { tasks: task._id } }, // Use $pull to remove the taskId from the array
+      { $pull: { tasks: task._id } },
       { new: true },
     );
   }
